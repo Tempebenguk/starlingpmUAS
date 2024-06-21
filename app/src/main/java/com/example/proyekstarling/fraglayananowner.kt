@@ -30,36 +30,6 @@ class fraglayananowner : Fragment() {
         val view = inflater.inflate(R.layout.fraglayananowner, container, false)
         database = FirebaseDatabase.getInstance().reference
 
-        // Setup RecyclerView
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(thisParent)
-        transactionAdapter = TransactionAdapter(transactionList) { transactionId, transaction ->
-        }
-        recyclerView.adapter = transactionAdapter
-
-        // Fetch transactions from Firebase and sort by date
-        fetchTransactionsSortedByDate()
-
         return view
-    }
-
-    private fun fetchTransactionsSortedByDate() {
-        database.child("transaksi")
-            .orderByChild("tgl_transaksi")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    transactionList.clear()
-                    snapshot.children.forEach { dataSnapshot ->
-                        val transaction = dataSnapshot.getValue(transaksi::class.java)
-                        val transactionId = dataSnapshot.key ?: ""
-                        transaction?.let { transactionList.add(transactionId to it) }
-                    }
-                    transactionAdapter.notifyDataSetChanged()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("DashboardAdmin", "Failed to read transactions", error.toException())
-                }
-            })
     }
 }
