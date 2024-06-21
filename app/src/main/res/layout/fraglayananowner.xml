@@ -21,94 +21,91 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/LayoutQR"
-        android:layout_width="410dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="100dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:layout_editor_absoluteX="0dp">
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="302dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="112dp"
+        android:text="QR Code"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="302dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="QR Code"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnqr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="149dp"
+        android:layout_weight="1"
+        android:background="#00FFFFFF"
+        app:icon="@android:drawable/ic_menu_crop"
+        app:iconSize="50dp"
+        app:iconTint="#070707"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btnqr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            app:icon="@android:drawable/ic_menu_crop"
-            app:iconSize="50dp"
-            app:iconTint="#070707" />
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="302dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="36dp"
+        android:text="Video Klip"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/btnvideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:background="#00FFFFFF"
+        app:icon="@android:drawable/ic_menu_slideshow"
+        app:iconSize="50dp"
+        app:iconTint="#0E0E0E"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnqr" />
 
-    <LinearLayout
-        android:id="@+id/LayoutVideo"
-        android:layout_width="410dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/LayoutQR"
-        tools:layout_editor_absoluteX="0dp">
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="302dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="15dp"
+        android:text="Lokasi"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnvideo" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="302dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Video Klip"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:background="#00FFFFFF"
+        app:icon="@android:drawable/ic_dialog_map"
+        app:iconSize="50dp"
+        app:iconTint="#676666"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnvideo" />
 
-        <Button
-            android:id="@+id/btnvideo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            app:icon="@android:drawable/ic_menu_slideshow"
-            app:iconSize="50dp"
-            app:iconTint="#0E0E0E" />
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/LayoutLokasi"
-        android:layout_width="410dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/LayoutVideo"
-        tools:layout_editor_absoluteX="2dp">
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="302dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Lokasi"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnmap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            app:icon="@android:drawable/ic_dialog_map"
-            app:iconSize="50dp"
-            app:iconTint="#676666" />
-
-    </LinearLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
