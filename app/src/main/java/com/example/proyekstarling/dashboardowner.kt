@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import androidx.fragment.app.FragmentTransaction
 import com.example.proyekstarling.databinding.DashboardownerBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -93,7 +91,7 @@ class dashboardowner : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 binding.fragmentLayout.setBackgroundColor(Color.argb(255,255,255,255))
                 binding.fragmentLayout.visibility = View.VISIBLE
             }
-            R.id.itemrekap-> {
+            R.id.itemtentang-> {
                 ft = supportFragmentManager.beginTransaction()
                 ft.replace(R.id.fragmentLayout, fraglayanan).commit()
                 binding.fragmentLayout.setBackgroundColor(Color.argb(255,255,255,255))

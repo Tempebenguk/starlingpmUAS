@@ -5,83 +5,110 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/gbr"
-        android:layout_width="600dp"
-        android:layout_height="900dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bgputih" />
-
-    <ImageView
-        android:id="@+id/img1uuuuu"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="114dp"
-        android:layout_marginEnd="6dp"
-        android:tint="#BFFFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView67777"
-        app:srcCompat="@drawable/starling" />
-
     <TextView
-        android:id="@+id/textView67777"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/baloo_bhai"
-        android:gravity="center"
-        android:text="Rekap Transaksi"
+        android:id="@+id/textView"
+        android:layout_width="168dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="114dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="115dp"
+        android:text="Tentang Starling"
+        android:textAllCaps="false"
         android:textColor="#BA7237"
         android:textSize="20sp"
-        android:textStyle="italic"
+        android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Spinner for Date -->
+    <LinearLayout
+        android:id="@+id/LayoutQR"
+        android:layout_width="410dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:layout_editor_absoluteX="0dp">
 
-    <!-- Spinner for Month -->
-    <Spinner
-        android:id="@+id/dateSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/monthSpinner"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView67777" />
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="302dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="QR Code"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    <Spinner
-        android:id="@+id/monthSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/yearSpinner"
-        app:layout_constraintStart_toEndOf="@+id/dateSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/textView67777" />
+        <Button
+            android:id="@+id/btnqr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            app:icon="@android:drawable/ic_menu_crop"
+            app:iconSize="50dp"
+            app:iconTint="#070707" />
 
-    <!-- Spinner for Year -->
-    <Spinner
-        android:id="@+id/yearSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/monthSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/textView67777" />
+    </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="380dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yearSpinner" />
+    <LinearLayout
+        android:id="@+id/LayoutVideo"
+        android:layout_width="410dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/LayoutQR"
+        tools:layout_editor_absoluteX="0dp">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="302dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="Video Klip"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnvideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            app:icon="@android:drawable/ic_menu_slideshow"
+            app:iconSize="50dp"
+            app:iconTint="#0E0E0E" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LayoutLokasi"
+        android:layout_width="410dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/LayoutVideo"
+        tools:layout_editor_absoluteX="2dp">
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="302dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="Lokasi"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnmap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            app:icon="@android:drawable/ic_dialog_map"
+            app:iconSize="50dp"
+            app:iconTint="#676666" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
