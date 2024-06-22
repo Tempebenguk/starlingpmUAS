@@ -29,61 +29,61 @@ class fragmenuowner : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-        ambilDataMenu()
+//        ambilDataMenu()
         return view
     }
 
-    private fun ambilDataMenu() {
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                binding.menuListContainer.removeAllViews()
-                for (menuSnapshot in snapshot.children) {
-                    val menuId = menuSnapshot.key
-                    val menu = menuSnapshot.getValue(menu::class.java)
-                    if (menu != null && menuId != null) {
-                        menu.id = menuId
-                        tambahkanMenuKeView(menu)
-                    }
-                }
-            }
+//    private fun ambilDataMenu() {
+//        database.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                binding.menuListContainer.removeAllViews()
+//                for (menuSnapshot in snapshot.children) {
+//                    val menuId = menuSnapshot.key
+//                    val menu = menuSnapshot.getValue(menu::class.java)
+//                    if (menu != null && menuId != null) {
+//                        menu.id = menuId
+//                        tambahkanMenuKeView(menu)
+//                    }
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun tambahkanMenuKeView(menu: menu) {
-        val menuView = LayoutInflater.from(context).inflate(R.layout.menu_item, binding.menuListContainer, false)
-        val menuIdTextView = menuView.findViewById<TextView>(R.id.menuIdTextView)
-        val menuNameTextView = menuView.findViewById<TextView>(R.id.menuNameTextView)
-        val menuPriceTextView = menuView.findViewById<TextView>(R.id.menuPriceTextView)
-        val menuStockTextView = menuView.findViewById<TextView>(R.id.menuStockTextView)
-        val editButton = menuView.findViewById<Button>(R.id.editButton)
-        val deleteButton = menuView.findViewById<Button>(R.id.deleteButton)
-
-        menuIdTextView.text = menu.id
-        menuNameTextView.text = menu.nama_menu
-        menuPriceTextView.text = "Harga: ${menu.harga}"
-        menuStockTextView.text = "Stok: ${menu.stock}"
-
-        editButton.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("menuId", menu.id)
-            val fragubahmenuowner = fragubahmenuowner()
-            fragubahmenuowner.arguments = bundle
-
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragubahmenuowner)
-                .addToBackStack(null)
-                .commit()
-        }
-
-        deleteButton.setOnClickListener {
-            database.child(menu.id).removeValue().addOnCompleteListener {
-                Toast.makeText(context, "Menu dihapus", Toast.LENGTH_SHORT).show()
-            }
-        }
-        binding.menuListContainer.addView(menuView)
-    }
+//    private fun tambahkanMenuKeView(menu: menu) {
+//        val menuView = LayoutInflater.from(context).inflate(R.layout.menu_item, binding.menuListContainer, false)
+//        val menuIdTextView = menuView.findViewById<TextView>(R.id.menuIdTextView)
+//        val menuNameTextView = menuView.findViewById<TextView>(R.id.menuNameTextView)
+//        val menuPriceTextView = menuView.findViewById<TextView>(R.id.menuPriceTextView)
+//        val menuStockTextView = menuView.findViewById<TextView>(R.id.menuStockTextView)
+//        val editButton = menuView.findViewById<Button>(R.id.editButton)
+//        val deleteButton = menuView.findViewById<Button>(R.id.deleteButton)
+//
+//        menuIdTextView.text = menu.id
+//        menuNameTextView.text = menu.nama_menu
+//        menuPriceTextView.text = "Harga: ${menu.harga}"
+//        menuStockTextView.text = "Stok: ${menu.stock}"
+//
+//        editButton.setOnClickListener {
+//            val bundle = Bundle()
+//            bundle.putString("menuId", menu.id)
+//            val fragubahmenuowner = fragubahmenuowner()
+//            fragubahmenuowner.arguments = bundle
+//
+//            requireActivity().supportFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, fragubahmenuowner)
+//                .addToBackStack(null)
+//                .commit()
+//        }
+//
+//        deleteButton.setOnClickListener {
+//            database.child(menu.id).removeValue().addOnCompleteListener {
+//                Toast.makeText(context, "Menu dihapus", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//        binding.menuListContainer.addView(menuView)
+//    }
 }

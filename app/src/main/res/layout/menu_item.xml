@@ -53,11 +53,11 @@
             android:textColor="#BA7237"
             android:textSize="14sp" />
 
-        <ImageView
-            android:id="@+id/gambarmenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@tools:sample/avatars" />
+<!--        <ImageView-->
+<!--            android:id="@+id/gambarmenu"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@tools:sample/avatars" />-->
     </LinearLayout>
 
     <LinearLayout
