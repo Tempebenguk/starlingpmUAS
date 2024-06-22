@@ -12,56 +12,49 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.502"
         app:srcCompat="@drawable/bgputih" />
-
-    <EditText
-        android:id="@+id/edTCode"
-        android:layout_width="346dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="30dp"
-        android:ems="10"
-        android:hint="Nama Alamat"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <Button
         android:id="@+id/btnScanqr"
-        android:layout_width="129dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="33dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
         android:backgroundTint="#009688"
-        android:text="SCAN QRCODE"
+        android:text="SCAN"
         android:textColor="#020202"
+        android:textSize="12sp"
         app:cornerRadius="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edTCode" />
+        app:layout_constraintTop_toBottomOf="@+id/edText" />
 
     <Button
         android:id="@+id/btnGenqr"
-        android:layout_width="162dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="33dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
         android:backgroundTint="#009688"
-        android:text="GENERATE QRCODE"
+        android:text="GENERATE"
         android:textColor="#000000"
+        android:textSize="10sp"
         app:cornerRadius="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edTCode" />
+        app:layout_constraintStart_toEndOf="@+id/btnScanqr"
+        app:layout_constraintTop_toBottomOf="@+id/imageVQR" />
 
     <ImageView
         android:id="@+id/imageVQR"
-        android:layout_width="351dp"
-        android:layout_height="470dp"
-        app:layout_constraintTop_toBottomOf="@+id/btnScanqr"
-        tools:layout_editor_absoluteX="31dp"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edText"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@android:color/holo_blue_dark" />
 
     <TextView
@@ -71,12 +64,45 @@
         android:layout_marginStart="162dp"
         android:layout_marginTop="34dp"
         android:layout_marginEnd="170dp"
-        android:text="QR Code"
+        android:text=" QR Code"
         android:textColor="#BA7237"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edText"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="100dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSim"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="30dp"
+        android:text="SIMPAN"
+        android:textSize="12sp"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageVQR" />
+
+    <SeekBar
+        android:id="@+id/btnSeek"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGenqr" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
