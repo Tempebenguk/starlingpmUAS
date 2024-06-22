@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_dialog_map"
+        app:layout_constraintBottom_toBottomOf="@+id/chip"
+        app:layout_constraintStart_toEndOf="@+id/chip"
+        app:layout_constraintTop_toTopOf="@+id/chip" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="104dp"
+        android:checkable="true"
+        android:elevation="6dp"
+        android:text="Live Update"
+        android:visibility="visible"
+        app:checkedIconVisible="true"
+        app:layout_constraintBottom_toBottomOf="@+id/fab"
+        app:layout_constraintEnd_toStartOf="@+id/fab"
+        app:layout_constraintTop_toTopOf="@+id/fab"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true" app:srcCompat=
+        "@android:drawable/ic_menu_myplaces"
+        android:id="@+id/fab" android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="Content Description"
+        android:focusable="true" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:inputType="textPersonName" android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" tools:ignore="Autofill" />
+
+    <Button
+        android:id="@+id/btnKirim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Simpan"
+        app:layout_constraintBottom_toBottomOf="@+id/chip"
+        app:layout_constraintEnd_toStartOf="@+id/chip"
+        app:layout_constraintTop_toTopOf="@+id/chip"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>

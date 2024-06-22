@@ -15,6 +15,7 @@ import com.example.proyekstarling.dashboardowner
 import com.example.proyekstarling.transaksi
 import com.google.firebase.database.*
 import com.example.proyekstarling.databinding.FraglayananownerBinding
+import com.example.proyekstarling.fragaboutownergps1
 import com.example.proyekstarling.fragaboutownerqr
 import com.example.proyekstarling.fragaboutownervideo
 
@@ -42,6 +43,13 @@ class fraglayananowner : Fragment() {
         binding.btnvideo.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragaboutownervideo())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.btnmap.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragaboutownergps1())
                 .addToBackStack(null)
                 .commit()
         }
