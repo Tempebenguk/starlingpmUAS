@@ -39,7 +39,7 @@ class fragtambahmenuowner : Fragment(), View.OnClickListener {
     private lateinit var binding: FragtambahmenuownerBinding
     private var selectedImageUri: Uri? = null
 
-    val urlRoot = "http://localhost"
+    val urlRoot = "http://192.168.1.24"
     val url = "$urlRoot/starling/show_menu.php"
     val url2 = "$urlRoot/starling/get_kategori.php"
     val url3 = "$urlRoot/starling/cud_menu.php"
@@ -66,6 +66,8 @@ class fragtambahmenuowner : Fragment(), View.OnClickListener {
         binding.btnTambahMenu.setOnClickListener {
             queryInsertUpdateDelete("insert")
         }
+
+
 
         binding.spinKategori.onItemSelectedListener = itemSelected
 

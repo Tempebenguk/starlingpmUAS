@@ -39,7 +39,7 @@ import java.util.Locale
 class fragtambahkategoriowner : Fragment() {
     private lateinit var binding: FragtambahkategoriownerBinding
 
-    val urlRoot = "http://localhost"
+    val urlRoot = "http://192.168.1.24"
     val url3 = "$urlRoot/starling/cud_kategori.php"
 
     override fun onCreateView(
@@ -79,6 +79,7 @@ class fragtambahkategoriowner : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                    kosong()
                 } else {
                     when (mode) {
                         "insert" -> Toast.makeText(
@@ -130,5 +131,10 @@ class fragtambahkategoriowner : Fragment() {
         }
         val q = Volley.newRequestQueue(requireContext())
         q.add(request)
+    }
+
+    private fun kosong() {
+        binding.tambahIdKtg.text.clear()
+        binding.tambahNamaKtg.text.clear()
     }
 }

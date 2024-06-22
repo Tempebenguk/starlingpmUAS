@@ -50,6 +50,7 @@
         android:layout_width="383dp"
         android:layout_height="45dp"
         android:layout_marginStart="5dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="5dp"
         android:backgroundTint="#00E432"
         android:text="Tambah"
@@ -59,7 +60,7 @@
         app:cornerRadius="0sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="210dp" />
+        app:layout_constraintTop_toTopOf="@+id/img1uuuuu" />
 
     <EditText
         android:id="@+id/tambahIdKtg"

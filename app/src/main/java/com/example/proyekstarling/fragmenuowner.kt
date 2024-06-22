@@ -8,12 +8,17 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.proyekstarling.databinding.FragmenuownerBinding
-import com.google.firebase.database.*
+import org.json.JSONArray
+import org.json.JSONException
 
 class fragmenuowner : Fragment() {
     private lateinit var binding: FragmenuownerBinding
-    private lateinit var database: DatabaseReference
+    private lateinit var menuListContainer: ViewGroup
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,7 +26,7 @@ class fragmenuowner : Fragment() {
     ): View {
         binding = FragmenuownerBinding.inflate(inflater, container, false)
         val view = binding.root
-        database = FirebaseDatabase.getInstance().getReference("menu")
+        menuListContainer = binding.menuListContainer
 
         binding.btnTambahMenu.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
@@ -29,61 +34,56 @@ class fragmenuowner : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-//        ambilDataMenu()
+
+        ambilDataMenu()
+
         return view
     }
 
-//    private fun ambilDataMenu() {
-//        database.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                binding.menuListContainer.removeAllViews()
-//                for (menuSnapshot in snapshot.children) {
-//                    val menuId = menuSnapshot.key
-//                    val menu = menuSnapshot.getValue(menu::class.java)
-//                    if (menu != null && menuId != null) {
-//                        menu.id = menuId
-//                        tambahkanMenuKeView(menu)
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
+    private fun ambilDataMenu() {
+        val url = "http://192.168.1.24/starling/show_menu.php"
 
-//    private fun tambahkanMenuKeView(menu: menu) {
-//        val menuView = LayoutInflater.from(context).inflate(R.layout.menu_item, binding.menuListContainer, false)
-//        val menuIdTextView = menuView.findViewById<TextView>(R.id.menuIdTextView)
-//        val menuNameTextView = menuView.findViewById<TextView>(R.id.menuNameTextView)
-//        val menuPriceTextView = menuView.findViewById<TextView>(R.id.menuPriceTextView)
-//        val menuStockTextView = menuView.findViewById<TextView>(R.id.menuStockTextView)
-//        val editButton = menuView.findViewById<Button>(R.id.editButton)
-//        val deleteButton = menuView.findViewById<Button>(R.id.deleteButton)
-//
-//        menuIdTextView.text = menu.id
-//        menuNameTextView.text = menu.nama_menu
-//        menuPriceTextView.text = "Harga: ${menu.harga}"
-//        menuStockTextView.text = "Stok: ${menu.stock}"
-//
-//        editButton.setOnClickListener {
-//            val bundle = Bundle()
-//            bundle.putString("menuId", menu.id)
-//            val fragubahmenuowner = fragubahmenuowner()
-//            fragubahmenuowner.arguments = bundle
-//
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, fragubahmenuowner)
-//                .addToBackStack(null)
-//                .commit()
-//        }
-//
-//        deleteButton.setOnClickListener {
-//            database.child(menu.id).removeValue().addOnCompleteListener {
-//                Toast.makeText(context, "Menu dihapus", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//        binding.menuListContainer.addView(menuView)
-//    }
+        val stringRequest = StringRequest(
+            Request.Method.POST, url,
+            Response.Listener { response ->
+                try {
+                    val jsonArray = JSONArray(response)
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(i)
+                        val menuId = jsonObject.getString("id_menu")
+                        val menuName = jsonObject.getString("nama_menu")
+                        val menuPrice = jsonObject.getInt("harga")
+                        val menuStock = jsonObject.getInt("stock")
+                        val menuCategory = jsonObject.getString("nama_kategori")
+
+                        tambahkanMenuKeView(menuId, menuName, menuPrice, menuStock, menuCategory)
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            })
+
+        val requestQueue = Volley.newRequestQueue(requireContext())
+        requestQueue.add(stringRequest)
+    }
+
+    private fun tambahkanMenuKeView(menuId: String, menuName: String, menuPrice: Int, menuStock: Int, menuCategory: String) {
+        val menuView = LayoutInflater.from(context).inflate(R.layout.list_menu, menuListContainer, false)
+        val menuIdTextView = menuView.findViewById<TextView>(R.id.txidmenu)
+        val menuNameTextView = menuView.findViewById<TextView>(R.id.txnamamenu)
+        val menuPriceTextView = menuView.findViewById<TextView>(R.id.txhargamenu)
+        val menuStockTextView = menuView.findViewById<TextView>(R.id.txstokmenu)
+        val menuCategoryTextView = menuView.findViewById<TextView>(R.id.txKategori)
+
+        menuIdTextView.text = menuId
+        menuNameTextView.text = menuName
+        menuPriceTextView.text = "Harga: $menuPrice"
+        menuStockTextView.text = "Stok: $menuStock"
+        menuCategoryTextView.text = "Kategori: $menuCategory"
+
+        menuListContainer.addView(menuView)
+    }
 }
