@@ -1,24 +1,26 @@
 package com.example.proyekstarling
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.proyekstarling.databinding.FrageditkategoriownerBinding
-import com.example.proyekstarling.databinding.FragedituserownerBinding
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import org.json.JSONObject
+import java.util.HashMap
+
 
 class fragubahkategoriowner : Fragment() {
     private lateinit var binding: FrageditkategoriownerBinding
-    private lateinit var database: DatabaseReference
-    private var adminId: String? = null
+
+    val urlRoot = "http://localhost"
+    val url3 = "$urlRoot/starling/cud_kategori.php"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,29 +28,87 @@ class fragubahkategoriowner : Fragment() {
     ): View {
         binding = FrageditkategoriownerBinding.inflate(inflater, container, false)
         val view = binding.root
-        database = FirebaseDatabase.getInstance().getReference("Admin")
 
-        // Get adminId from arguments
-        adminId = arguments?.getString("adminId")
-        if (adminId != null) {
-            loadAdminData(adminId!!)
+        binding.btnubahktg.setOnClickListener {
+            queryInsertUpdateDelete("update")
         }
-
         return view
     }
 
-    private fun loadAdminData(adminId: String) {
-        database.child(adminId).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val admin = dataSnapshot.getValue(admin::class.java)
-                if (admin != null) {
-
+    fun queryInsertUpdateDelete(mode: String) {
+        val request = object : StringRequest(
+            Request.Method.POST, url3,
+            Response.Listener { response ->
+                val jsonObject = JSONObject(response)
+                val error = jsonObject.getString("kode")
+                if (error.equals("BERHASIL")) {
+                    when (mode) {
+                        "insert" -> Toast.makeText(
+                            requireContext(),
+                            "Berhasil menambah data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        "update" -> Toast.makeText(
+                            requireContext(),
+                            "Berhasil memperbarui data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        "delete" -> Toast.makeText(
+                            requireContext(),
+                            "Berhasil menghapus data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    when (mode) {
+                        "insert" -> Toast.makeText(
+                            requireContext(),
+                            "Gagal menambah data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        "update" -> Toast.makeText(
+                            requireContext(),
+                            "Gagal memperbarui data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        "delete" -> Toast.makeText(
+                            requireContext(),
+                            "Gagal menghapus data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
+            },
+            Response.ErrorListener {
+                Toast.makeText(
+                    requireContext(),
+                    "Tidak dapat terhubung ke server",
+                    Toast.LENGTH_LONG
+                ).show()
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val hm = HashMap<String, String>()
+                when (mode) {
+                    "insert" -> {
+                        hm.put("mode", "insert")
+                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
+                        hm.put("nama_kategori", binding.tambahNamaKtg.text.toString())
+                    }
+                    "update" -> {
+                        hm.put("mode", "update")
+                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
+                        hm.put("nama_kategori", binding.tambahNamaKtg.text.toString())
+                    }
+                    "delete" -> {
+                        hm.put("mode", "delete")
+                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
+                    }
+                }
+                return hm
             }
-        })
+        }
+        val q = Volley.newRequestQueue(requireContext())
+        q.add(request)
     }
 }

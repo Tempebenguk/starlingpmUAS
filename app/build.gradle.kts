@@ -56,6 +56,8 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:3.6.0")
     implementation ("com.github.mumayank:AirLocation:2.5.2")
     implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.android.volley:volley:1.2.1")
+    implementation("androidx.privacysandbox.tools:tools-core:1.0.0-alpha08")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -75,39 +75,15 @@
         android:textStyle="bold"
         app:cornerRadius="0sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroupKategori" />
+        app:layout_constraintTop_toBottomOf="@+id/spinKategori" />
 
-    <RadioGroup
-        android:id="@+id/radioGroupKategori"
-        android:layout_width="286dp"
-        android:layout_height="32dp"
+    <Spinner
+        android:id="@+id/spinKategori"
+        android:layout_width="278dp"
+        android:layout_height="51dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="9dp"
-        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Jenkel">
-
-        <RadioButton
-            android:id="@+id/radioButtonMakanan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Makanan"
-            android:textColor="#BA7237" />
-
-        <RadioButton
-            android:id="@+id/radioButtonMinuman"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Minuman"
-            android:textColor="#BA7237" />
-
-        <RadioButton
-            android:id="@+id/radioButtonSnack"
-            android:layout_width="96dp"
-            android:layout_height="match_parent"
-            android:text="Snack"
-            android:textColor="#BA7237" />
-    </RadioGroup>
+        app:layout_constraintTop_toBottomOf="@+id/Jenkel" />
 
     <EditText
         android:id="@+id/tambahIdMenu"
@@ -232,7 +208,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroupKategori"
+        app:layout_constraintTop_toBottomOf="@+id/spinKategori"
         tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

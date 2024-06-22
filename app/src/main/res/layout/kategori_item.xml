@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:background="@drawable/edittext_border"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/KtgNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Nama Ktg"
+        android:textColor="#BA7237"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/editButtonktg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#E7C61A"
+        android:text="Edit"
+        android:textSize="14sp"
+        app:cornerRadius="4sp" />
+
+    <Button
+        android:id="@+id/deleteButtonktg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF4646"
+        android:text="Hapus"
+        android:textSize="14sp"
+        app:cornerRadius="4sp" />
+</LinearLayout>
