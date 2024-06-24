@@ -29,6 +29,12 @@ class fraguserowner : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.btnCarik.setOnClickListener {
+            val query = binding.cariAdmin.text.toString()
+            cariAdmin(query)
+        }
+
         ambilDataAdmin()
         return view
     }
@@ -51,6 +57,27 @@ class fraguserowner : Fragment() {
                 Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun cariAdmin(query: String) {
+        database.orderByChild("nama").startAt(query).endAt(query + "\uf8ff")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    binding.adminListContainer.removeAllViews()
+                    for (adminSnapshot in snapshot.children) {
+                        val adminId = adminSnapshot.key
+                        val admin = adminSnapshot.getValue(admin::class.java)
+                        if (admin != null && adminId != null) {
+                            admin.id = adminId
+                            tambahkanAdminKeView(admin)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun tambahkanAdminKeView(admin: admin) {

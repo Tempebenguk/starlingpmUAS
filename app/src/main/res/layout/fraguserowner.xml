@@ -48,17 +48,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnCari"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="285dp"
-        android:layout_marginTop="60dp"
-        android:text="CARI"
-        app:cornerRadius="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/btnTambahMhs"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="85dp"
@@ -98,5 +87,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
+
+    <Button
+        android:id="@+id/btnCarik"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="50dp"
+        android:text="CARI"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

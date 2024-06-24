@@ -30,6 +30,11 @@ class fragkategoriowner : Fragment() {
                 .commit()
         }
 
+        binding.btnCarika.setOnClickListener {
+            val query = binding.cariKtg.text.toString()
+            cariKategori(query)
+        }
+
         ambilDataKategori()
         return view
     }
@@ -52,6 +57,27 @@ class fragkategoriowner : Fragment() {
                 Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun cariKategori(query: String) {
+        database.orderByChild("nama_kategori").startAt(query).endAt(query + "\uf8ff")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    binding.ktgListContainer.removeAllViews()
+                    for (kategoriSnapshot in snapshot.children) {
+                        val kategoriId = kategoriSnapshot.key
+                        val kategori = kategoriSnapshot.getValue(kategori::class.java)
+                        if (kategori != null && kategoriId != null) {
+                            kategori.id = kategoriId
+                            tambahkanKategoriKeView(kategori)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun tambahkanKategoriKeView(kategori: kategori) {

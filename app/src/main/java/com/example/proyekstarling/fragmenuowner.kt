@@ -29,6 +29,12 @@ class fragmenuowner : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.btnCarii.setOnClickListener {
+            val query = binding.cariKtgo.text.toString()
+            cariMenu(query)
+        }
+
         ambilDataMenu()
         return view
     }
@@ -51,6 +57,27 @@ class fragmenuowner : Fragment() {
                 Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun cariMenu(query: String) {
+        database.orderByChild("nama_menu").startAt(query).endAt(query + "\uf8ff")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    binding.menuListContainer.removeAllViews()
+                    for (menuSnapshot in snapshot.children) {
+                        val menuId = menuSnapshot.key
+                        val menu = menuSnapshot.getValue(menu::class.java)
+                        if (menu != null && menuId != null) {
+                            menu.id = menuId
+                            tambahkanMenuKeView(menu)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun tambahkanMenuKeView(menu: menu) {
