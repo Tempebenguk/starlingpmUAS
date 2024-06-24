@@ -1,69 +1,62 @@
 package com.example.proyekstarling
 
 import android.Manifest
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.example.proyekstarling.databinding.FrageditmenuownerBinding
-import com.example.proyekstarling.databinding.FragtambahmenuownerBinding
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.squareup.picasso.Picasso
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import org.json.JSONArray
-import org.json.JSONObject
+import com.squareup.picasso.Picasso
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Date
-import java.util.HashMap
-import java.util.Locale
+import java.util.*
 
-class fragubahmenuowner : Fragment(), View.OnClickListener {
-    companion object {
-        private const val REQUEST_CAMERA = 1
-        private const val REQUEST_GALLERY = 2
-        private const val REQUEST_CODE_STORAGE_PERMISSION = 101
+class fragubahmenuowner : Fragment() {
+    private lateinit var binding: FrageditmenuownerBinding
+    private lateinit var database: DatabaseReference
+    private var selectedImageUri: Uri? = null
+    private var menuId: String? = null
+    private lateinit var currentPhotoPath: String
+
+    private val selectImageResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri
+            binding.imageView14.setImageURI(uri)
+        }
     }
 
-    private lateinit var binding: FrageditmenuownerBinding
-    private var selectedImageUri: Uri? = null
+    private val takePictureResultLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            selectedImageUri?.let {
+                binding.imageView14.setImageURI(it)
+            }
+        } else {
+            Toast.makeText(context, "Failed to capture image", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-    val urlRoot = "http://localhost"
-    val url = "$urlRoot/starling/show_menu.php"
-    val url2 = "$urlRoot/starling/get_kategori.php"
-    val url3 = "$urlRoot/starling/cud_menu.php"
-    val url4 = "$urlRoot/starling/check_service.php"
-
-    private val daftarKategori: ArrayList<String> = ArrayList()
-    lateinit var kategoriAdapter: ArrayAdapter<String>
-    var fileUri = Uri.parse("")
-    lateinit var mediaHelper: MediaHelper
-    var imgStr = ""
-    var pilihKategori = ""
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            dispatchTakePictureIntent()
+        } else {
+            Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,257 +64,172 @@ class fragubahmenuowner : Fragment(), View.OnClickListener {
     ): View {
         binding = FrageditmenuownerBinding.inflate(inflater, container, false)
         val view = binding.root
+        database = FirebaseDatabase.getInstance().getReference("menu")
 
-        kategoriAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, daftarKategori)
-        kategoriAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinKategori.adapter = kategoriAdapter
-
-        binding.btnUbahMenu.setOnClickListener {
-            queryInsertUpdateDelete("update")
+        menuId = arguments?.getString("menuId")
+        if (menuId != null) {
+            loadMenuData(menuId!!)
         }
 
-        binding.spinKategori.onItemSelectedListener = itemSelected
+        setupSpinner()
+
+        binding.btnUbahMenu.setOnClickListener {
+            ubahMenu()
+        }
+
+        binding.btnFoto.setOnClickListener {
+            showImagePickerDialog()
+        }
 
         return view
     }
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.tambahgambar -> {
-                showImageSourceDialog()  // Memunculkan dialog pilihan
+    private fun loadMenuData(menuId: String) {
+        database.child(menuId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val menu = dataSnapshot.getValue(menu::class.java)
+                if (menu != null) {
+                    binding.ubahIdMenu.setText(menuId)
+                    binding.ubahNamaMenu.setText(menu.nama_menu)
+                    binding.ubahHargaMenu.setText(menu.harga.toString())
+                    binding.ubahStokMenu.setText(menu.stock.toString())
+                    Picasso.get().load(menu.gambar_menu).into(binding.imageView14)
+
+                    when (menu.id_kategori) {
+                        "kat1" -> binding.spinnerKategori.setSelection(0)
+                        "kat2" -> binding.spinnerKategori.setSelection(1)
+                        "kat3" -> binding.spinnerKategori.setSelection(2)
+                    }
+                }
             }
-        }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(context, "Gagal memuat data menu", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    private fun showImageSourceDialog() {
-        val options = arrayOf("Kamera", "Galeri", "Batal")
+    private fun setupSpinner() {
+        val kategoriOptions = arrayOf("Makanan", "Minuman", "Snack")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, kategoriOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerKategori.adapter = adapter
+    }
+
+    private fun showImagePickerDialog() {
+        val options = arrayOf("Ambil Foto", "Pilih Dari Galeri")
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Pilih Sumber Gambar")
+        builder.setTitle("Select Option")
         builder.setItems(options) { dialog, which ->
             when (which) {
-                0 -> checkCameraPermissionAndOpenCamera()
-                1 -> openGallery()
-                2 -> dialog.dismiss()
+                0 -> {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        dispatchTakePictureIntent()
+                    } else {
+                        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }
+                1 -> selectImageResultLauncher.launch("image/*")
             }
         }
         builder.show()
     }
 
-    private fun checkCameraPermissionAndOpenCamera() {
-        val cameraPermission = Manifest.permission.CAMERA
-        val internetPermission = Manifest.permission.INTERNET
-
-        if (isPermissionGranted(cameraPermission) && isPermissionGranted(internetPermission)) {
-            // Izin kamera sudah diberikan, buka kamera
-            openCamera()
-        } else {
-            // Meminta izin kamera jika belum diberikan
-            requestCameraPermission()
+    private fun dispatchTakePictureIntent() {
+        val photoFile: File? = try {
+            createImageFile()
+        } catch (ex: IOException) {
+            Toast.makeText(context, "Error occurred while creating the file", Toast.LENGTH_SHORT).show()
+            null
         }
-    }
-
-    private fun openCamera() {
-        fileUri = mediaHelper.getOutputMediaFileUri()
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
-        startActivityForResult(intent, REQUEST_CAMERA)
-    }
-
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_GALLERY)
-    }
-
-    private fun isPermissionGranted(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestCameraPermission() {
-        val cameraPermission = Manifest.permission.CAMERA
-        val internetPermission = Manifest.permission.INTERNET
-
-        if (Build.VERSION.SDK_INT < 23) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_CODE_STORAGE_PERMISSION
+        photoFile?.also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                requireContext(),
+                "com.example.proyekstarling.fileprovider",
+                it
             )
+            selectedImageUri = photoURI
+            takePictureResultLauncher.launch(photoURI)
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        ).apply {
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun ubahMenu() {
+        val nama = binding.ubahNamaMenu.text.toString().trim()
+        val harga = binding.ubahHargaMenu.text.toString().trim()
+        val stok = binding.ubahStokMenu.text.toString().toIntOrNull()
+        val kategori = when (binding.spinnerKategori.selectedItemPosition) {
+            0 -> "kat1"
+            1 -> "kat2"
+            2 -> "kat3"
+            else -> ""
+        }
+
+        if (menuId != null) {
+            database.child(menuId!!).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val menu = dataSnapshot.getValue(menu::class.java)
+                    if (menu != null) {
+                        val updatedNama = if (nama.isNotEmpty()) nama else menu.nama_menu
+                        val updatedHarga = if (harga.isNotEmpty()) harga.toInt() else menu.harga
+                        val updatedStok = stok ?: menu.stock
+                        val updatedKategori = if (kategori.isNotEmpty()) kategori else menu.id_kategori
+
+                        if (selectedImageUri != null) {
+                            val storageReference = FirebaseStorage.getInstance().reference
+                            val imageRef = storageReference.child("menu_images/${menuId}.jpg")
+                            imageRef.putFile(selectedImageUri!!).addOnSuccessListener {
+                                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                                    val updatedGambar = uri.toString()
+                                    saveUpdatedMenu(menuId!!, updatedNama, updatedHarga, updatedStok, updatedGambar, updatedKategori)
+                                }
+                            }.addOnFailureListener {
+                                Toast.makeText(context, "Gagal mengunggah gambar", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            val updatedGambar = menu.gambar_menu
+                            saveUpdatedMenu(menuId!!, updatedNama, updatedHarga, updatedStok, updatedGambar, updatedKategori)
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Toast.makeText(context, "Gagal memuat data menu", Toast.LENGTH_SHORT).show()
+                }
+            })
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_CODE_STORAGE_PERMISSION
-            )
+            Toast.makeText(context, "ID menu tidak valid", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            REQUEST_CODE_STORAGE_PERMISSION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openCamera()
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Izin kamera tidak diberikan",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+    private fun saveUpdatedMenu(menuId: String, nama: String, harga: Int, stok: Int, gambar: String, kategori: String) {
+        val updatedMenu = menu(
+            nama_menu = nama,
+            harga = harga,
+            stock = stok,
+            gambar_menu = gambar,
+            id_kategori = kategori
+        )
+
+        database.child(menuId).setValue(updatedMenu).addOnCompleteListener {
+            if (it.isSuccessful) {
+                Toast.makeText(context, "Menu diperbarui", Toast.LENGTH_SHORT).show()
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                Toast.makeText(context, "Gagal memperbarui menu", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_CAMERA -> {
-                    imgStr = mediaHelper.getBitmapToString(fileUri, binding.imageView14)
-                }
-                REQUEST_GALLERY -> {
-                    fileUri = data?.data
-                    if (fileUri != null) {
-                        imgStr = mediaHelper.getBitmapToString(fileUri, binding.imageView14)
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        getNamaKategori()
-    }
-
-    val itemSelected = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            pilihKategori = daftarKategori.get(position)
-        }
-
-        override fun onNothingSelected(parent: AdapterView<*>?) {
-            binding.spinKategori.setSelection(0)
-        }
-    }
-
-    fun getNamaKategori() {
-        val request = object : StringRequest(
-            Request.Method.POST, url2,
-            Response.Listener { response ->
-                daftarKategori.clear()
-                val jsonArray = JSONArray(response)
-                for (x in 0 until jsonArray.length()) {
-                    val jsonObject = jsonArray.getJSONObject(x)
-                    daftarKategori.add(jsonObject.getString("nama_kategori"))
-                }
-                kategoriAdapter.notifyDataSetChanged()
-            },
-            Response.ErrorListener {
-                Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_LONG).show()
-            }
-        ) {
-            override fun getParams(): MutableMap<String, String> {
-                return HashMap()
-            }
-        }
-        val q = Volley.newRequestQueue(requireContext())
-        q.add(request)
-    }
-
-    fun queryInsertUpdateDelete(mode: String) {
-        val request = object : StringRequest(
-            Request.Method.POST, url3,
-            Response.Listener { response ->
-                val jsonObject = JSONObject(response)
-                val error = jsonObject.getString("kode")
-                if (error.equals("BERHASIL")) {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            },
-            Response.ErrorListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Tidak dapat terhubung ke server",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        ) {
-            override fun getParams(): MutableMap<String, String> {
-                val hm = HashMap<String, String>()
-                val nmFile =
-                    "DC" + SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date()) + ".jpg"
-                when (mode) {
-                    "insert" -> {
-                        hm.put("mode", "insert")
-                        hm.put("id_prodi", binding.ubahIdMenu.text.toString())
-                        hm.put("nama_menu", binding.ubahNamaMenu.text.toString())
-                        hm.put("harga", binding.ubahHargaMenu.text.toString())
-                        hm.put("stok", binding.ubahStokMenu.text.toString())
-                        hm.put("image", imgStr)
-                        hm.put("file", nmFile)
-                        hm.put("nama_prodi", pilihKategori)
-                    }
-                    "update" -> {
-                        hm.put("mode", "update")
-                        hm.put("id_prodi", binding.ubahIdMenu.text.toString())
-                        hm.put("nama_menu", binding.ubahNamaMenu.text.toString())
-                        hm.put("harga", binding.ubahHargaMenu.text.toString())
-                        hm.put("stok", binding.ubahStokMenu.text.toString())
-                        hm.put("image", imgStr)
-                        hm.put("file", nmFile)
-                        hm.put("nama_prodi", pilihKategori)
-                    }
-                    "delete" -> {
-                        hm.put("mode", "delete")
-                        hm.put("id_menu", binding.ubahIdMenu.text.toString())
-                    }
-                }
-                return hm
-            }
-        }
-        val q = Volley.newRequestQueue(requireContext())
-        q.add(request)
     }
 }

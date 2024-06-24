@@ -46,7 +46,7 @@
         app:srcCompat="@drawable/starling" />
 
     <Button
-        android:id="@+id/btntambahadmin"
+        android:id="@+id/btn_ubah_user"
         android:layout_width="383dp"
         android:layout_height="45dp"
         android:layout_marginStart="5dp"

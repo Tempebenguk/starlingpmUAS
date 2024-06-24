@@ -1,26 +1,19 @@
 package com.example.proyekstarling
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.example.proyekstarling.databinding.FrageditkategoriownerBinding
-import org.json.JSONObject
-import java.util.HashMap
-
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class fragubahkategoriowner : Fragment() {
     private lateinit var binding: FrageditkategoriownerBinding
-
-    val urlRoot = "http://localhost"
-    val url3 = "$urlRoot/starling/cud_kategori.php"
+    private lateinit var database: DatabaseReference
+    private var kategoriId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,86 +22,54 @@ class fragubahkategoriowner : Fragment() {
         binding = FrageditkategoriownerBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        binding.btnubahktg.setOnClickListener {
-            queryInsertUpdateDelete("update")
+        database = FirebaseDatabase.getInstance().getReference("kategori")
+        kategoriId = arguments?.getString("kategoriId")
+
+        if (kategoriId != null) {
+            loadKategoriData(kategoriId!!)
         }
+
+        binding.btnubahktg.setOnClickListener {
+            updateKategoriData()
+        }
+
         return view
     }
 
-    fun queryInsertUpdateDelete(mode: String) {
-        val request = object : StringRequest(
-            Request.Method.POST, url3,
-            Response.Listener { response ->
-                val jsonObject = JSONObject(response)
-                val error = jsonObject.getString("kode")
-                if (error.equals("BERHASIL")) {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            },
-            Response.ErrorListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Tidak dapat terhubung ke server",
-                    Toast.LENGTH_LONG
-                ).show()
+    private fun loadKategoriData(kategoriId: String) {
+        database.child(kategoriId).get().addOnSuccessListener { dataSnapshot ->
+            val kategori = dataSnapshot.getValue(kategori::class.java)
+            if (kategori != null) {
+                binding.tambahIdKtg.setText(kategoriId)
+                binding.tambahNamaKtg.setText(kategori.nama_kategori)
+            } else {
+                Toast.makeText(context, "Gagal memuat data kategori", Toast.LENGTH_SHORT).show()
             }
-        ) {
-            override fun getParams(): MutableMap<String, String> {
-                val hm = HashMap<String, String>()
-                when (mode) {
-                    "insert" -> {
-                        hm.put("mode", "insert")
-                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
-                        hm.put("nama_kategori", binding.tambahNamaKtg.text.toString())
-                    }
-                    "update" -> {
-                        hm.put("mode", "update")
-                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
-                        hm.put("nama_kategori", binding.tambahNamaKtg.text.toString())
-                    }
-                    "delete" -> {
-                        hm.put("mode", "delete")
-                        hm.put("id_kategori", binding.tambahIdKtg.text.toString())
-                    }
-                }
-                return hm
+        }.addOnFailureListener {
+            Toast.makeText(context, "Gagal memuat data kategori", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateKategoriData() {
+        val idKategori = binding.tambahIdKtg.text.toString()
+        val namaKategori = binding.tambahNamaKtg.text.toString()
+
+        if (idKategori.isEmpty() || namaKategori.isEmpty()) {
+            Toast.makeText(context, "Semua field harus diisi", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val kategoriMap = mapOf<String, Any>(
+            "nama_kategori" to namaKategori
+        )
+
+        database.child(idKategori).updateChildren(kategoriMap).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Berhasil memperbarui data", Toast.LENGTH_SHORT).show()
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                Toast.makeText(context, "Gagal memperbarui data", Toast.LENGTH_SHORT).show()
             }
         }
-        val q = Volley.newRequestQueue(requireContext())
-        q.add(request)
     }
 }

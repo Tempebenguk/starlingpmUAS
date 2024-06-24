@@ -4,21 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.example.proyekstarling.databinding.FragedituserownerBinding
-import org.json.JSONObject
-import java.util.HashMap
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class fragubahuserowner : Fragment() {
     private lateinit var binding: FragedituserownerBinding
-
-    val urlRoot = "http://localhost"
-    val url3 = "$urlRoot/starling/cud_admin.php"
+    private lateinit var database: DatabaseReference
+    private var adminId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,97 +25,68 @@ class fragubahuserowner : Fragment() {
     ): View {
         binding = FragedituserownerBinding.inflate(inflater, container, false)
         val view = binding.root
+        database = FirebaseDatabase.getInstance().getReference("Admin")
 
-        binding.btnubahadmin.setOnClickListener {
-            queryInsertUpdateDelete("update")
+        // Get adminId from arguments
+        adminId = arguments?.getString("adminId")
+        if (adminId != null) {
+            loadAdminData(adminId!!)
         }
+
+        binding.btnUbahUser.setOnClickListener {
+            updateAdmin()
+        }
+
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun loadAdminData(adminId: String) {
+        database.child(adminId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val admin = dataSnapshot.getValue(admin::class.java)
+                if (admin != null) {
+                    binding.editIdAdmin.setText(adminId)
+                    binding.editNamaAdmin.setText(admin.nama)
+                    binding.editAlamatAdmin.setText(admin.alamat)
+                    binding.editTeleponAdmin.setText(admin.noTelp)
+                    binding.editPasswordAdmin.setText(admin.password)
+                    if (admin.jenkel == "Laki-laki") {
+                        binding.radioButtonL.isChecked = true
+                    } else {
+                        binding.radioButtonP.isChecked = true
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    fun queryInsertUpdateDelete(mode: String) {
-        val request = object : StringRequest(
-            Request.Method.POST, url3,
-            Response.Listener { response ->
-                val jsonObject = JSONObject(response)
-                val error = jsonObject.getString("kode")
-                if (error.equals("BERHASIL")) {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Berhasil menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    when (mode) {
-                        "insert" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menambah data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "update" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal memperbarui data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "delete" -> Toast.makeText(
-                            requireContext(),
-                            "Gagal menghapus data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            },
-            Response.ErrorListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Tidak dapat terhubung ke server",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        ) {
-            override fun getParams(): MutableMap<String, String> {
-                val hm = HashMap<String, String>()
-                when (mode) {
-                    "insert" -> {
-                        hm.put("mode", "insert")
-                        hm.put("id_admin", binding.editIdAdmin.text.toString())
-                        hm.put("nama", binding.editNamaAdmin.text.toString())
-                        hm.put("alamat", binding.editAlamatAdmin.text.toString())
-                        hm.put("telepon", binding.editTeleponAdmin.text.toString())
-                        hm.put("jenis_kelamin", binding.radioGroupJenkel.checkedRadioButtonId.toString())
-                    }
-                    "update" -> {
-                        hm.put("mode", "insert")
-                        hm.put("id_admin", binding.editIdAdmin.text.toString())
-                        hm.put("nama", binding.editNamaAdmin.text.toString())
-                        hm.put("alamat", binding.editAlamatAdmin.text.toString())
-                        hm.put("telepon", binding.editTeleponAdmin.text.toString())
-                        hm.put("jenis_kelamin", binding.radioGroupJenkel.checkedRadioButtonId.toString())
-                    }
-                    "delete" -> {
-                        hm.put("mode", "delete")
-                        hm.put("id_admin", binding.editIdAdmin.text.toString())
-                    }
-                }
-                return hm
-            }
+    private fun updateAdmin() {
+        val id = binding.editIdAdmin.text.toString()
+        val nama = binding.editNamaAdmin.text.toString().trim()
+        val alamat = binding.editAlamatAdmin.text.toString().trim()
+        val noTelp = binding.editTeleponAdmin.text.toString().trim()
+        val password = binding.editPasswordAdmin.text.toString().trim()
+        val selectedId = binding.radioGroupJenkel.checkedRadioButtonId
+        val radioButton: RadioButton = binding.root.findViewById(selectedId)
+        val jenkel = radioButton.text.toString()
+
+        if (nama.isEmpty() || alamat.isEmpty() || noTelp.isEmpty() || password.isEmpty()) {
+            Toast.makeText(context, "Form tidak boleh kosong", Toast.LENGTH_SHORT).show()
+            return
         }
-        val q = Volley.newRequestQueue(requireContext())
-        q.add(request)
+
+        val admin = admin(id, nama, alamat, noTelp, password, jenkel)
+
+        database.child(id).setValue(admin).addOnCompleteListener {
+            Toast.makeText(context, "Data Admin telah diperbarui", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.popBackStack()
+
+        }.addOnFailureListener {
+            Toast.makeText(context, "Gagal memperbarui data Admin", Toast.LENGTH_SHORT).show()
+        }
     }
 }

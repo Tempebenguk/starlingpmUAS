@@ -18,10 +18,10 @@ class fragkategoriowner : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragkategoriownerBinding.inflate(inflater, container, false)
         val view = binding.root
-        database = FirebaseDatabase.getInstance().getReference("Admin")
+        database = FirebaseDatabase.getInstance().getReference("kategori")
 
         binding.btnTambahKtg.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
@@ -30,29 +30,20 @@ class fragkategoriowner : Fragment() {
                 .commit()
         }
 
-        binding.btnCari.setOnClickListener {
-            val searchName = binding.cariKtg.text.toString()
-            if (searchName.isNotEmpty()) {
-                cariAdminBerdasarkanNama(searchName)
-            } else {
-                ambilDataAdmin()
-            }
-        }
-
-        ambilDataAdmin()
+        ambilDataKategori()
         return view
     }
 
-    private fun ambilDataAdmin() {
+    private fun ambilDataKategori() {
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 binding.ktgListContainer.removeAllViews()
-                for (adminSnapshot in snapshot.children) {
-                    val adminId = adminSnapshot.key
-                    val admin = adminSnapshot.getValue(admin::class.java)
-                    if (admin != null && adminId != null) {
-                        admin.id = adminId
-                        tambahkanAdminKeView(admin)
+                for (kategoriSnapshot in snapshot.children) {
+                    val kategoriId = kategoriSnapshot.key
+                    val kategori = kategoriSnapshot.getValue(kategori::class.java)
+                    if (kategori != null && kategoriId != null) {
+                        kategori.id = kategoriId
+                        tambahkanKategoriKeView(kategori)
                     }
                 }
             }
@@ -63,51 +54,31 @@ class fragkategoriowner : Fragment() {
         })
     }
 
-    private fun tambahkanAdminKeView(admin: admin) {
-        val adminView = LayoutInflater.from(context).inflate(R.layout.user_item, binding.ktgListContainer, false)
-        val adminNameTextView = adminView.findViewById<TextView>(R.id.AdminNameTextView)
-        val editButton = adminView.findViewById<Button>(R.id.editButtonadm)
-        val deleteButton = adminView.findViewById<Button>(R.id.deleteButtonadm)
+    private fun tambahkanKategoriKeView(kategori: kategori) {
+        val kategoriView = LayoutInflater.from(context).inflate(R.layout.kategori_item, binding.ktgListContainer, false)
+        val kategoriNameTextView = kategoriView.findViewById<TextView>(R.id.KtgNameTextView)
+        val editButton = kategoriView.findViewById<Button>(R.id.editButtonktg)
+        val deleteButton = kategoriView.findViewById<Button>(R.id.deleteButtonktg)
 
-        adminNameTextView.text = admin.nama
+        kategoriNameTextView.text = kategori.nama_kategori
 
         editButton.setOnClickListener {
             val bundle = Bundle()
-            bundle.putString("adminId", admin.id)
-            val fragubahuserowner = fragubahuserowner()
-            fragubahuserowner.arguments = bundle
+            bundle.putString("kategoriId", kategori.id)
+            val fragubahkategoriowner = fragubahkategoriowner()
+            fragubahkategoriowner.arguments = bundle
 
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragubahuserowner)
+                .replace(R.id.fragment_container, fragubahkategoriowner)
                 .addToBackStack(null)
                 .commit()
         }
 
         deleteButton.setOnClickListener {
-            database.child(admin.id).removeValue().addOnCompleteListener {
-                Toast.makeText(context, "Admin dihapus", Toast.LENGTH_SHORT).show()
+            database.child(kategori.id).removeValue().addOnCompleteListener {
+                Toast.makeText(context, "Kategori dihapus", Toast.LENGTH_SHORT).show()
             }
         }
-        binding.ktgListContainer.addView(adminView)
-    }
-
-    private fun cariAdminBerdasarkanNama(nama: String) {
-        database.orderByChild("nama").equalTo(nama).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                binding.ktgListContainer.removeAllViews()
-                for (adminSnapshot in snapshot.children) {
-                    val adminId = adminSnapshot.key
-                    val admin = adminSnapshot.getValue(admin::class.java)
-                    if (admin != null && adminId != null) {
-                        admin.id = adminId
-                        tambahkanAdminKeView(admin)
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Gagal mencari kategori", Toast.LENGTH_SHORT).show()
-            }
-        })
+        binding.ktgListContainer.addView(kategoriView)
     }
 }

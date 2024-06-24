@@ -60,7 +60,7 @@
         app:cornerRadius="0sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img1uuuuu" />
+        app:layout_constraintTop_toBottomOf="@+id/tambahNamaKtg" />
 
     <EditText
         android:id="@+id/tambahIdKtg"
@@ -82,8 +82,8 @@
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
         android:background="@drawable/edittext_border"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"

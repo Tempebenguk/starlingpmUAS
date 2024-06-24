@@ -29,85 +29,55 @@ class fraguserowner : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-
-//        binding.btnCari.setOnClickListener {
-//            val searchName = binding.cariAdmin.text.toString()
-//            if (searchName.isNotEmpty()) {
-//                cariAdminBerdasarkanNama(searchName)
-//            } else {
-//                ambilDataAdmin()
-//            }
-//        }
-
-//        ambilDataAdmin()
+        ambilDataAdmin()
         return view
     }
 
-//    private fun ambilDataAdmin() {
-//        database.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                binding.adminListContainer.removeAllViews()
-//                for (adminSnapshot in snapshot.children) {
-//                    val adminId = adminSnapshot.key
-//                    val admin = adminSnapshot.getValue(admin::class.java)
-//                    if (admin != null && adminId != null) {
-//                        admin.id = adminId
-//                        tambahkanAdminKeView(admin)
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
-//
-//    private fun tambahkanAdminKeView(admin: admin) {
-//        val adminView = LayoutInflater.from(context).inflate(R.layout.user_item, binding.adminListContainer, false)
-//        val adminNameTextView = adminView.findViewById<TextView>(R.id.AdminNameTextView)
-//        val editButton = adminView.findViewById<Button>(R.id.editButtonadm)
-//        val deleteButton = adminView.findViewById<Button>(R.id.deleteButtonadm)
-//
-//        adminNameTextView.text = admin.nama
-//
-//        editButton.setOnClickListener {
-//            val bundle = Bundle()
-//            bundle.putString("adminId", admin.id)
-//            val fragubahuserowner = fragubahuserowner()
-//            fragubahuserowner.arguments = bundle
-//
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, fragubahuserowner)
-//                .addToBackStack(null)
-//                .commit()
-//        }
-//
-//        deleteButton.setOnClickListener {
-//            database.child(admin.id).removeValue().addOnCompleteListener {
-//                Toast.makeText(context, "Admin dihapus", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//        binding.adminListContainer.addView(adminView)
-//    }
-//
-//    private fun cariAdminBerdasarkanNama(nama: String) {
-//        database.orderByChild("nama").equalTo(nama).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                binding.adminListContainer.removeAllViews()
-//                for (adminSnapshot in snapshot.children) {
-//                    val adminId = adminSnapshot.key
-//                    val admin = adminSnapshot.getValue(admin::class.java)
-//                    if (admin != null && adminId != null) {
-//                        admin.id = adminId
-//                        tambahkanAdminKeView(admin)
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Gagal mencari admin", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
+    private fun ambilDataAdmin() {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                binding.adminListContainer.removeAllViews()
+                for (adminSnapshot in snapshot.children) {
+                    val adminId = adminSnapshot.key
+                    val admin = adminSnapshot.getValue(admin::class.java)
+                    if (admin != null && adminId != null) {
+                        admin.id = adminId
+                        tambahkanAdminKeView(admin)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun tambahkanAdminKeView(admin: admin) {
+        val adminView = LayoutInflater.from(context).inflate(R.layout.user_item, binding.adminListContainer, false)
+        val adminNameTextView = adminView.findViewById<TextView>(R.id.AdminNameTextView)
+        val editButton = adminView.findViewById<Button>(R.id.editButtonadm)
+        val deleteButton = adminView.findViewById<Button>(R.id.deleteButtonadm)
+
+        adminNameTextView.text = admin.nama
+
+        editButton.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("adminId", admin.id)
+            val fragubahuserowner = fragubahuserowner()
+            fragubahuserowner.arguments = bundle
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragubahuserowner)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        deleteButton.setOnClickListener {
+            database.child(admin.id).removeValue().addOnCompleteListener {
+                Toast.makeText(context, "Admin dihapus", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.adminListContainer.addView(adminView)
+    }
 }

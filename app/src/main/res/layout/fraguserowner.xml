@@ -35,6 +35,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/cariAdmin"
+        android:layout_width="240dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="60dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="cari admin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnCari"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="285dp"
+        android:layout_marginTop="60dp"
+        android:text="CARI"
+        app:cornerRadius="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/btnTambahMhs"
         style="@style/Widget.AppCompat.Button.Borderless"
@@ -75,28 +98,5 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
-
-    <Button
-        android:id="@+id/btnCari"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="285dp"
-        android:layout_marginTop="60dp"
-        android:text="CARI"
-        app:cornerRadius="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/cariAdmin"
-        android:layout_width="240dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="60dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="cari admin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
